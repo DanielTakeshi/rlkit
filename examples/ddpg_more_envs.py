@@ -91,7 +91,10 @@ def experiment(variant):
 
 
 if __name__ == "__main__":
-    # noinspection PyTypeChecker
+    pp = argparse.ArgumentParser()
+    pp.add_argument('--env', type=str)
+    args = pp.parse_args()
+
     variant = dict(
         algorithm_kwargs=dict(
             num_epochs=1000,
