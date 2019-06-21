@@ -11,8 +11,10 @@ Note that one epoch = 5k steps, so 200 epochs = 1 million steps.
 """
 from gym.envs.mujoco import (
         AntEnv,
+        InvertedPendulumEnv,
         HalfCheetahEnv,
         HopperEnv,
+        ReacherEnv,
         SwimmerEnv,
         Walker2dEnv,
 )
@@ -40,12 +42,18 @@ def experiment(variant, args):
     if 'Ant' in args.env:
         expl_env = NormalizedBoxEnv( AntEnv() )
         eval_env = NormalizedBoxEnv( AntEnv() )
+    elif 'InvertedPendulum' in args.env:
+        expl_env = NormalizedBoxEnv( InvertedPendulumEnv() )
+        eval_env = NormalizedBoxEnv( InvertedPendulumEnv() )
     elif 'HalfCheetah' in args.env:
         expl_env = NormalizedBoxEnv( HalfCheetahEnv() )
         eval_env = NormalizedBoxEnv( HalfCheetahEnv() )
     elif 'Hopper' in args.env:
         expl_env = NormalizedBoxEnv( HopperEnv() )
         eval_env = NormalizedBoxEnv( HopperEnv() )
+    elif 'Reacher' in args.env:
+        expl_env = NormalizedBoxEnv( ReacherEnv() )
+        eval_env = NormalizedBoxEnv( ReacherEnv() )
     elif 'Swimmer' in args.env:
         expl_env = NormalizedBoxEnv( SwimmerEnv() )
         eval_env = NormalizedBoxEnv( SwimmerEnv() )
