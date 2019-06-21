@@ -10,4 +10,5 @@ MANIFEST
 
 
 data/
+old_data/
 MUJOCO_LOG.TXT

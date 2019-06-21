@@ -146,13 +146,13 @@ if __name__ == "__main__":
 
     variant = dict(
         algorithm_kwargs=dict(
-            num_epochs=3000,
-            num_eval_steps_per_epoch=5000,
+            num_epochs=1000,  # was 3000
+            num_eval_steps_per_epoch=1000,  # was 5000
             num_trains_per_train_loop=1000,
             num_expl_steps_per_train_loop=1000,
-            min_num_steps_before_training=1000,
+            min_num_steps_before_training=10000, # was 1000
             max_path_length=1000,
-            batch_size=256,
+            batch_size=128,  # was 256
         ),
         trainer_kwargs=dict(
             discount=0.99,
