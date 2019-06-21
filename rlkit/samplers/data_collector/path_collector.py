@@ -7,6 +7,8 @@ from rlkit.samplers.data_collector.base import PathCollector
 
 
 class MdpPathCollector(PathCollector):
+    """The path collector used for DDPG and TD3.
+    """
     def __init__(
             self,
             env,
@@ -33,6 +35,9 @@ class MdpPathCollector(PathCollector):
             num_steps,
             discard_incomplete_paths,
     ):
+        """Applies for either exploration or evaluation.
+        Unfortunately it looks like it is serial, not parallel.
+        """
         paths = []
         num_steps_collected = 0
         while num_steps_collected < num_steps:

@@ -42,6 +42,24 @@ class BatchRLAlgorithm(BaseRLAlgorithm, metaclass=abc.ABCMeta):
         self.min_num_steps_before_training = min_num_steps_before_training
 
     def _train(self):
+        """Called by superclass BaseRLAlgorithm, conducts the training loop.
+
+        Before training (i.e., the minimum number of steps before trainnig) Get
+        new paths for _exploration_, with noise added (in the case of DDPG).
+        Add the paths to replay buffer.
+
+        Then we begin the actual cycle of evaluation and exploration. Each
+        epoch consists of an evaluator data collector collecting paths
+        (discarding incomplete ones), and then exploration data collection, and
+        only exploration data is added to the buffer. The number of training
+        loops is 1 by default so usually it will be one cycle of (evaluate,
+        explore). Each explore, though, will do a bunch of training loops,
+        e.g., 1000 by default.
+
+        When we talk about 'steps' we really should be talking about training
+        (or exploration) steps, right? The evaluation steps is for reporting
+        results.
+        """
         if self.min_num_steps_before_training > 0:
             init_expl_paths = self.expl_data_collector.collect_new_paths(
                 self.max_path_length,

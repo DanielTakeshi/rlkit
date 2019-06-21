@@ -39,26 +39,42 @@ def smoothed(x, w):
 def plot(args):
     """Load monitor curves and the progress csv file. And plot from those.
 
-    TODO: still have to understand what all these *mean*, i.e. exploration vs
-    evaluation? Does evaluation just mean some 'held out' trajectory not added
-    to the replay buffer, but with no noise added to the actor?
+    These are logged *after each epoch*, BUT each epoch may correspond to a
+    different number of steps.  CAREFUL! Not all terms in the data frame match
+    those from the debug log!  For example there is no `evaluation/Average
+    Returns` in the data frame, even though it's in the debug log.
 
-    Also, are these already with smoothing applied?
+    I still have to understand what all these log terms *mean*. Here is my
+    estimates:
 
-    CAREFUL! Not all terms in the data frame match those from the debug log!
-    For example there is no `evaluation/Average Returns` in the data frame,
-    even though it's in the debug log.
+    Exploration vs Evaluation: compute similar metrics, except former includes
+    noise injected into the action based on some noise injection scheme,
+    whereas the latter does not, and is just the DDPG policy. They are run for
+    potentially a different number of steps. We have exploration steps per
+    train loop, so if that value is 1000, and we run for some number of epochs
+    (e.g., 1000) then each epoch is a train loop, I assume. So we get 1M
+    exploration steps. But there can be a different number of *evaluation*
+    steps per epoch. But I am seeing step counts that don't match, hopefully
+    it's not too big of a deal.
+
+    Rewards are near 0-1 as those are scaled in some way. We really want the
+    *returns*, which correspond to results in the published literature.
+
+    Questions:
+    - Also, are these already with smoothing applied?
+    - Contact, control, forward, survive?
+    - Paths?
     """
     columns_plot = sorted([
         'exploration/Returns Mean',
-        'exploration/Rewards Mean',
+        'exploration/num steps total',
+        #'exploration/Num Paths',
         'evaluation/Returns Mean',
-        'evaluation/Rewards Mean',
+        'evaluation/num steps total',
+        #'evaluation/Num Paths',
     ])
     progfile = join(args.path,'progress.csv')
     df = pd.read_csv(progfile, delimiter = ',')
-
-    # (1000,118) for HalfCheetah example
     print("loaded csv, shape {}".format(df.shape))
     df_cols = sorted([column for column in df])
     for col in df_cols:
@@ -67,11 +83,11 @@ def plot(args):
     # One row per statistic.
     nrows, ncols = len(columns_plot), 1
     fig, ax = plt.subplots(nrows, ncols, squeeze=False, sharey='row',
-                           figsize=(13*ncols,4*nrows))
+                           figsize=(14*ncols,4*nrows))
     title = args.title
     k = 10
     row = 0
-    for column in df:
+    for column in df_cols:
         if column not in columns_plot:
             continue
         data = df[column].tolist()
@@ -87,7 +103,10 @@ def plot(args):
         row += 1
 
     plt.tight_layout()
-    figname = '{}.png'.format(title)
+    if title[-4:] == '.png':
+        figname = '{}'.format(title)
+    else:
+        figname = '{}.png'.format(title)
     plt.savefig(figname)
     print("\nJust saved: {}".format(figname))
 
